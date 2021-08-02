@@ -1,4 +1,4 @@
-import { ActionType, Action } from './actions';
+import { Action, ActionType } from './actions';
 
 // root state
 type State = {
