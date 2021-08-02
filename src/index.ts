@@ -37,7 +37,7 @@ const app = (() => {
     handshake: {},
   };
 
-  window.addEventListener('message', (e: MessageEvent<Action>) => {
+  window.addEventListener('message', (e: { data: Action }) => {
     state = reducer(state, e.data, subscribeMap);
   });
 
