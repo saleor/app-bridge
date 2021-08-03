@@ -9,7 +9,7 @@ type HandshakeAction = {
 //   payload: {
 //     theme: "light" | "dark";
 //   }
-//   type: "redirect"
+//   type: "theme"
 // }
 
 export type Action = HandshakeAction;

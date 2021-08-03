@@ -1,5 +1,12 @@
 import { fireEvent } from '@testing-library/dom';
 
+// mock document.referrer
+const origin = 'http://example.com';
+Object.defineProperty(window.document, 'referrer', {
+  value: origin,
+  writable: true,
+});
+
 import { createApp } from '../src';
 
 describe('createApp', () => {
@@ -18,6 +25,7 @@ describe('createApp', () => {
       window,
       new MessageEvent('message', {
         data: { type: 'handshake', payload: { token } },
+        origin,
       })
     );
 
@@ -33,14 +41,35 @@ describe('createApp', () => {
     expect(callback).not.toHaveBeenCalled();
 
     const token = 'fresh-token';
+    // correct event
     fireEvent(
       window,
       new MessageEvent('message', {
         data: { type: 'handshake', payload: { token } },
+        origin,
+      })
+    );
+
+    // incorrect event type
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { type: 'invalid', payload: { token: 'invalid' } },
+        origin,
+      })
+    );
+
+    // incorrect origin
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { type: 'handshake', payload: { token } },
+        origin: 'http://wrong.origin.com',
       })
     );
 
     expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(app.getState());
     expect(app.getState().token).toEqual(token);
 
     // unsubscribe
@@ -50,10 +79,15 @@ describe('createApp', () => {
       window,
       new MessageEvent('message', {
         data: { type: 'handshake', payload: { token: '123' } },
+        origin,
       })
     );
 
     expect(callback).toHaveBeenCalledTimes(1);
     expect(app.getState().token).toEqual('123');
+  });
+
+  it('persists domain', () => {
+    expect(app.getState().domain).toEqual(domain);
   });
 });

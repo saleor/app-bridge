@@ -1,13 +1,12 @@
 import { Action, ActionType } from './actions';
 
-// root state
 type State = {
   token?: string;
   ready: boolean;
   domain: string;
 };
 
-type EventCallback = (data: any) => void;
+type EventCallback = (data: State) => void;
 type SubscribeMap = Record<ActionType, Record<string, EventCallback>>;
 
 function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
@@ -25,6 +24,9 @@ function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
 
       return newState;
     }
+    default: {
+      return state;
+    }
   }
 }
 
@@ -37,7 +39,17 @@ const app = (() => {
     handshake: {},
   };
 
-  window.addEventListener('message', (e: { data: Action }) => {
+  let refererOrigin: string;
+  try {
+    refererOrigin = new URL(document.referrer).origin;
+  } catch (e) {
+    console.warn('document.referrer is empty');
+  }
+
+  window.addEventListener('message', e => {
+    if (e.origin !== refererOrigin) {
+      return;
+    }
     state = reducer(state, e.data, subscribeMap);
   });
 
@@ -82,7 +94,8 @@ export function createApp(targetDomain?: string) {
 
   app.setState({ domain });
 
-  function dispatch(message: Action) {
+  // actions to be defined
+  function dispatch(message: unknown) {
     if (!!window.parent) {
       window.parent.postMessage(message, '*');
     }
