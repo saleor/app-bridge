@@ -2,7 +2,7 @@ type HandshakeAction = {
   payload: {
     token: string;
   };
-  type: 'handshake';
+  type: "handshake";
 };
 
 // type ThemeAction = {
@@ -13,4 +13,4 @@ type HandshakeAction = {
 // }
 
 export type Action = HandshakeAction;
-export type ActionType = Action['type'];
+export type ActionType = Action["type"];

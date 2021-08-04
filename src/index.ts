@@ -1,4 +1,4 @@
-import { Action, ActionType } from './actions';
+import { Action, ActionType } from "./actions";
 
 type State = {
   token?: string;
@@ -11,7 +11,7 @@ type SubscribeMap = Record<ActionType, Record<string, EventCallback>>;
 
 function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
   switch (action.type) {
-    case 'handshake': {
+    case "handshake": {
       const newState = {
         ...state,
         ready: true,
@@ -32,7 +32,7 @@ function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
 
 const app = (() => {
   let state: State = {
-    domain: '',
+    domain: "",
     ready: false,
   };
   const subscribeMap: SubscribeMap = {
@@ -43,10 +43,10 @@ const app = (() => {
   try {
     refererOrigin = new URL(document.referrer).origin;
   } catch (e) {
-    console.warn('document.referrer is empty');
+    console.warn("document.referrer is empty");
   }
 
-  window.addEventListener('message', e => {
+  window.addEventListener("message", e => {
     if (e.origin !== refererOrigin) {
       return;
     }
@@ -89,7 +89,7 @@ export function createApp(targetDomain?: string) {
     domain = targetDomain;
   } else {
     const url = new URL(window.location.href);
-    domain = url.searchParams.get('domain') || '';
+    domain = url.searchParams.get("domain") || "";
   }
 
   app.setState({ domain });
@@ -97,7 +97,7 @@ export function createApp(targetDomain?: string) {
   // actions to be defined
   function dispatch(message: unknown) {
     if (!!window.parent) {
-      window.parent.postMessage(message, '*');
+      window.parent.postMessage(message, "*");
     }
   }
 
