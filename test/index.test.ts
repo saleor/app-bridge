@@ -42,10 +42,14 @@ describe("createApp", () => {
 
     const token = "fresh-token";
     // correct event
+    const payload = {
+      token,
+      version: 1,
+    };
     fireEvent(
       window,
       new MessageEvent("message", {
-        data: { type: "handshake", payload: { token } },
+        data: { type: "handshake", payload },
         origin,
       })
     );
@@ -69,7 +73,7 @@ describe("createApp", () => {
     );
 
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(app.getState());
+    expect(callback).toHaveBeenCalledWith(payload);
     expect(app.getState().token).toEqual(token);
 
     // unsubscribe

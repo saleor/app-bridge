@@ -1,4 +1,6 @@
-import { Action, ActionType } from "./actions";
+import { SSR } from "./constants";
+import { Actions } from "./actions";
+import { Events, EventType, PayloadOfEvent } from "./events";
 
 type State = {
   token?: string;
@@ -6,21 +8,19 @@ type State = {
   domain: string;
 };
 
-type EventCallback = (data: State) => void;
-type SubscribeMap = Record<ActionType, Record<string, EventCallback>>;
+type EventCallback<TPayload extends {} = {}> = (data: TPayload) => void;
+type SubscribeMap = {
+  [type in EventType]: Record<any, EventCallback<PayloadOfEvent<type>>>;
+};
 
-function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
-  switch (action.type) {
-    case "handshake": {
+function reducer(state: State, event: Events) {
+  switch (event.type) {
+    case EventType.handshake: {
       const newState = {
         ...state,
         ready: true,
-        token: action.payload.token,
+        token: event.payload.token,
       };
-
-      Object.getOwnPropertySymbols(subscribeMap.handshake).forEach(key =>
-        subscribeMap.handshake[key as any](newState)
-      );
 
       return newState;
     }
@@ -31,12 +31,20 @@ function reducer(state: State, action: Action, subscribeMap: SubscribeMap) {
 }
 
 const app = (() => {
+  if (SSR) {
+    console.warn(
+      "@saleor/app-bridge detected you're running this app in SSR mode. Make sure to call `createApp` when window object exists."
+    );
+    return null as never;
+  }
+
   let state: State = {
     domain: "",
     ready: false,
   };
   const subscribeMap: SubscribeMap = {
     handshake: {},
+    response: {},
   };
 
   let refererOrigin: string;
@@ -46,15 +54,35 @@ const app = (() => {
     console.warn("document.referrer is empty");
   }
 
-  window.addEventListener("message", e => {
-    if (e.origin !== refererOrigin) {
-      return;
-    }
-    state = reducer(state, e.data, subscribeMap);
-  });
+  window.addEventListener(
+    "message",
+    // Generic MessageEvent is not supported by tsdx's TS version
+    ({ origin, data }: Omit<MessageEvent, "data"> & { data: Events }) => {
+      // check if event origin matches the document referer
+      if (origin !== refererOrigin) {
+        return;
+      }
 
-  function subscribe(type: ActionType, cb: EventCallback) {
+      // run callbacks
+      const { type, payload } = data;
+      if (EventType.hasOwnProperty(type)) {
+        Object.getOwnPropertySymbols(subscribeMap[type]).forEach(key =>
+          // @ts-ignore
+          subscribeMap[type][key](payload)
+        );
+      }
+
+      // compute new state
+      state = reducer(state, data);
+    }
+  );
+
+  function subscribe<
+    TEventType extends EventType,
+    TPayload extends PayloadOfEvent<TEventType>
+  >(type: TEventType, cb: EventCallback<TPayload>) {
     const key = (Symbol() as unknown) as string; // https://github.com/Microsoft/TypeScript/issues/24587
+    // @ts-ignore
     subscribeMap[type][key] = cb;
 
     return () => {
@@ -74,7 +102,6 @@ const app = (() => {
 
     return state;
   }
-
   return {
     subscribe,
     getState,
@@ -94,11 +121,36 @@ export function createApp(targetDomain?: string) {
 
   app.setState({ domain });
 
-  // actions to be defined
-  function dispatch(message: unknown) {
-    if (!!window.parent) {
-      window.parent.postMessage(message, "*");
-    }
+  async function dispatch<T extends Actions>(action: T) {
+    return new Promise<void>((resolve, reject) => {
+      if (!!window.parent) {
+        window.parent.postMessage(
+          {
+            type: action.type,
+            payload: action.payload,
+          },
+          "*"
+        );
+
+        let intervalId: NodeJS.Timer;
+
+        const unsubscribe = app.subscribe(EventType.response, data => {
+          if (action.payload.actionId === data.actionId) {
+            unsubscribe();
+            clearInterval(intervalId);
+            resolve();
+          }
+        });
+
+        // If dashboard doesn't respond within 1 second, reject and unsubscribe
+        intervalId = setInterval(() => {
+          unsubscribe();
+          reject();
+        }, 1000);
+      } else {
+        reject("Error: Parent window does not exist");
+      }
+    });
   }
 
   return {
