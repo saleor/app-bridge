@@ -1,17 +1,21 @@
 import { v4 as uuidv4 } from "uuid";
 
-type Action<Name extends string, Payload extends {}> = {
+export const ActionType = {
+  redirect: "redirect",
+} as const;
+
+type Action<Name extends keyof typeof ActionType, Payload extends {}> = {
   payload: Payload;
   type: Name;
 };
 
-type ActionWithId<Name extends string, Payload extends {}> = {
+type ActionWithId<Name extends keyof typeof ActionType, Payload extends {}> = {
   payload: Payload & { actionId: string };
   type: Name;
 };
 
 function withActionId<
-  Name extends string,
+  Name extends keyof typeof ActionType,
   Payload extends {},
   T extends Action<Name, Payload>
 >(action: T): ActionWithId<Name, Payload> {

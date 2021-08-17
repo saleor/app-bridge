@@ -26,6 +26,7 @@ type DispatchResponseEvent = Event<
   }
 >;
 
+// TODO: Add Theme event
 // type ThemeEvent = Event<
 //   "theme",
 //   {

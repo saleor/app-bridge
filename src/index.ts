@@ -134,21 +134,31 @@ export function createApp(targetDomain?: string) {
 
         let intervalId: NodeJS.Timer;
 
-        const unsubscribe = app.subscribe(EventType.response, data => {
-          if (action.payload.actionId === data.actionId) {
-            unsubscribe();
-            clearInterval(intervalId);
-            resolve();
+        const unsubscribe = app.subscribe(
+          EventType.response,
+          ({ actionId, ok }) => {
+            if (action.payload.actionId === actionId) {
+              unsubscribe();
+              clearInterval(intervalId);
+
+              if (ok) {
+                resolve();
+              } else {
+                reject(
+                  "Error: Action responded with negative status. This indicates the action method was not used properly."
+                );
+              }
+            }
           }
-        });
+        );
 
         // If dashboard doesn't respond within 1 second, reject and unsubscribe
         intervalId = setInterval(() => {
           unsubscribe();
-          reject();
+          reject("Error: Action response timed out.");
         }, 1000);
       } else {
-        reject("Error: Parent window does not exist");
+        reject("Error: Parent window does not exist.");
       }
     });
   }
