@@ -30,11 +30,11 @@ function withActionId<
   };
 }
 
-type RedirectPayload = {
+export type RedirectPayload = {
   to: string;
   newTab?: boolean;
 };
-function Redirect(
+export function Redirect(
   payload: RedirectPayload
 ): ActionWithId<"redirect", RedirectPayload> {
   return withActionId({

@@ -10,7 +10,7 @@ type Event<Name extends keyof typeof EventType, Payload extends {}> = {
   type: Name;
 };
 
-type HandshakeEvent = Event<
+export type HandshakeEvent = Event<
   "handshake",
   {
     token: string;
@@ -18,7 +18,7 @@ type HandshakeEvent = Event<
   }
 >;
 
-type DispatchResponseEvent = Event<
+export type DispatchResponseEvent = Event<
   "response",
   {
     actionId: string;

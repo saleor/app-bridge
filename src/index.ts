@@ -1,5 +1,5 @@
-import { SSR } from "./constants";
 import { Actions } from "./actions";
+import { SSR } from "./constants";
 import { Events, EventType, PayloadOfEvent } from "./events";
 
 type State = {

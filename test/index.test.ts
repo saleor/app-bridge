@@ -1,5 +1,8 @@
 import { fireEvent } from "@testing-library/dom";
 
+import { Redirect } from "../src/actions";
+import { DispatchResponseEvent } from "../src/events";
+
 // mock document.referrer
 const origin = "http://example.com";
 Object.defineProperty(window.document, "referrer", {
@@ -93,5 +96,33 @@ describe("createApp", () => {
 
   it("persists domain", () => {
     expect(app.getState().domain).toEqual(domain);
+  });
+
+  it("dispatches valid action", () => {
+    const target = "/test";
+    const action = Redirect({ to: target });
+
+    window.addEventListener("message", event => {
+      if (event.data.type === action.type) {
+        fireEvent(
+          window,
+          new MessageEvent("message", {
+            data: {
+              type: "response",
+              payload: { ok: true, actionId: action.payload.actionId },
+            } as DispatchResponseEvent,
+            origin,
+          })
+        );
+      }
+    });
+
+    return expect(app.dispatch(action)).resolves.toBeUndefined();
+  });
+
+  it("times out after action response has not been registered", () => {
+    return expect(app.dispatch(Redirect({ to: "/test" }))).rejects.toBe(
+      "Error: Action response timed out."
+    );
   });
 });
