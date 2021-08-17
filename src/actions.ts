@@ -31,9 +31,15 @@ function withActionId<
 }
 
 export type RedirectPayload = {
+  /**
+   * Relative (inside Dashboard) or absolute URL path.
+   */
   to: string;
   newTab?: boolean;
 };
+/**
+ * Redirects Dashboard user.
+ */
 export function Redirect(
   payload: RedirectPayload
 ): ActionWithId<"redirect", RedirectPayload> {

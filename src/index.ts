@@ -77,6 +77,13 @@ const app = (() => {
     }
   );
 
+  /**
+   * Subscribes to an Event.
+   *
+   * @param type - Event type.
+   * @param cb - Callback that executes when Event is registered. Called with Event payload object.
+   * @returns Unsubscribe function. Call to unregister the callback.
+   */
   function subscribe<
     TEventType extends EventType,
     TPayload extends PayloadOfEvent<TEventType>
@@ -90,6 +97,11 @@ const app = (() => {
     };
   }
 
+  /**
+   * Gets current state.
+   *
+   * @returns State object.
+   */
   function getState() {
     return state;
   }
@@ -121,6 +133,12 @@ export function createApp(targetDomain?: string) {
 
   app.setState({ domain });
 
+  /**
+   * Dispatches Action to Saleor Dashboard.
+   *
+   * @param action - Action containing type and payload.
+   * @returns Promise resolved when Action is successfully completed.
+   */
   async function dispatch<T extends Actions>(action: T) {
     return new Promise<void>((resolve, reject) => {
       if (!!window.parent) {
