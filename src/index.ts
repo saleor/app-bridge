@@ -65,6 +65,7 @@ export function createApp(targetDomain?: string) {
   return {
     dispatch,
     subscribe: app.subscribe,
+    unsubscribeAll: app.unsubscribeAll,
     getState: app.getState,
   };
 }

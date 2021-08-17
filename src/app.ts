@@ -40,12 +40,12 @@ export const app = (() => {
     domain: "",
     ready: false,
   };
-  const subscribeMap: SubscribeMap = {
+  let subscribeMap: SubscribeMap = {
     handshake: {},
     response: {},
   };
-
   let refererOrigin: string;
+
   try {
     refererOrigin = new URL(document.referrer).origin;
   } catch (e) {
@@ -61,6 +61,9 @@ export const app = (() => {
         return;
       }
 
+      // compute new state
+      state = reducer(state, data);
+
       // run callbacks
       const { type, payload } = data;
       if (EventType.hasOwnProperty(type)) {
@@ -69,30 +72,43 @@ export const app = (() => {
           subscribeMap[type][key](payload)
         );
       }
-
-      // compute new state
-      state = reducer(state, data);
     }
   );
 
   /**
    * Subscribes to an Event.
    *
-   * @param type - Event type.
+   * @param eventType - Event type.
    * @param cb - Callback that executes when Event is registered. Called with Event payload object.
    * @returns Unsubscribe function. Call to unregister the callback.
    */
   function subscribe<
     TEventType extends EventType,
     TPayload extends PayloadOfEvent<TEventType>
-  >(type: TEventType, cb: EventCallback<TPayload>) {
+  >(eventType: TEventType, cb: EventCallback<TPayload>) {
     const key = (Symbol() as unknown) as string; // https://github.com/Microsoft/TypeScript/issues/24587
     // @ts-ignore
-    subscribeMap[type][key] = cb;
+    subscribeMap[eventType][key] = cb;
 
     return () => {
-      delete subscribeMap[type][key];
+      delete subscribeMap[eventType][key];
     };
+  }
+
+  /**
+   * Unsubscribe to all Events of type.
+   *
+   * @param eventType - (optional) Event type. If empty, all callbacks will be unsubscribed.
+   */
+  function unsubscribeAll(eventType?: EventType) {
+    if (eventType) {
+      subscribeMap[eventType] = {};
+    } else {
+      subscribeMap = {
+        handshake: {},
+        response: {},
+      };
+    }
   }
 
   /**
@@ -114,6 +130,7 @@ export const app = (() => {
   }
   return {
     subscribe,
+    unsubscribeAll,
     getState,
     setState,
   };
