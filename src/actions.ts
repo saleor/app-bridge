@@ -1,21 +1,25 @@
 import { v4 as uuidv4 } from "uuid";
 
+import { Values } from "./helpers";
+
+// Using constants over Enums, more info: https://fettblog.eu/tidy-typescript-avoid-enums/
 export const ActionType = {
   redirect: "redirect",
 } as const;
+export type ActionType = Values<typeof ActionType>;
 
-type Action<Name extends keyof typeof ActionType, Payload extends {}> = {
+type Action<Name extends ActionType, Payload extends {}> = {
   payload: Payload;
   type: Name;
 };
 
-type ActionWithId<Name extends keyof typeof ActionType, Payload extends {}> = {
+type ActionWithId<Name extends ActionType, Payload extends {}> = {
   payload: Payload & { actionId: string };
   type: Name;
 };
 
 function withActionId<
-  Name extends keyof typeof ActionType,
+  Name extends ActionType,
   Payload extends {},
   T extends Action<Name, Payload>
 >(action: T): ActionWithId<Name, Payload> {
@@ -40,14 +44,12 @@ export type RedirectPayload = {
 /**
  * Redirects Dashboard user.
  */
-export function Redirect(
-  payload: RedirectPayload
-): ActionWithId<"redirect", RedirectPayload> {
+export type RedirectAction = ActionWithId<"redirect", RedirectPayload>;
+export function Redirect(payload: RedirectPayload): RedirectAction {
   return withActionId({
     payload,
     type: "redirect",
   });
 }
 
-export type Actions = ReturnType<typeof Redirect>;
-export type ActionType = Actions["type"];
+export type Actions = RedirectAction;
