@@ -70,4 +70,6 @@ export function createApp(targetDomain?: string) {
   };
 }
 
+export * from "./events";
+export * from "./actions";
 export default createApp;
