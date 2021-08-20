@@ -75,5 +75,5 @@ handleRedirect();
 | Action     | Arguments                                                        | Description |
 | :--------- | :--------------------------------------------------------------- | :---------- |
 | `Redirect` | `to` (string) - relative (inside Dashboard) or absolute URL path |             |
-|            | `newTab` (boolean) - should open in a new tab                    |             |
+|            | `newContext` (boolean) - should open in a new browsing context   |             |
 

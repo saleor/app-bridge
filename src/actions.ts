@@ -39,7 +39,7 @@ export type RedirectPayload = {
    * Relative (inside Dashboard) or absolute URL path.
    */
   to: string;
-  newTab?: boolean;
+  newContext?: boolean;
 };
 /**
  * Redirects Dashboard user.
