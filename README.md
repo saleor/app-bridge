@@ -20,15 +20,60 @@ Access app state:
 const { token, domain, ready } = app.getState();
 ```
 
-Subscribe to events:
+## Events
+Events are messages that originate in Saleor Dashboard.
+
+### Available methods
+**`subscribe(eventType, callback)`** - can be used to listen to particular event type. It returns an unsubscribe function, which unregisters the callback.
+
+Example:
 ```js
-const unsubscribe = app.subscribe("handshake", (state) => state.token);
+const unsubscribe = app.subscribe("handshake", (payload) => {
+  setToken(payload.token); // do something with event payload
+  const { token } = app.getState(); // you can also get app's current state here
+});
 
 // unsubscribe when callback is no longer needed
 unsubscribe();
 ```
 
-### Available events
-| Event name  | Description                                                                      |
-| :---------  | :------------------------------------------------------------------------------- |
-| `handshake` | Fired when iFrame containing the App is initialized or new token is assigned     |
+**`unsubscribeAll(eventType?)`** - unregisters all callbacks of provided type. If no type was provided, it will remove all event callbacks.
+
+Example:
+```js
+app.unsubscribeAll("handshake"); // unsubscribe from all handshake events
+
+app.unsubscribeAll(); // unsubscribe from all events
+```
+
+### Available event types
+| Event type  | Description                                                                  |
+| :---------- | :--------------------------------------------------------------------------- |
+| `handshake` | Fired when iFrame containing the App is initialized or new token is assigned |
+| `response`  | Fired when Dashboard responds to an Action                                   |
+
+
+## Actions
+Actions expose a high-level API to communicate with Saleor Dashboard.
+
+### Available methods
+**`dispatch(action)`** - dispatches an Action. Returns a promise which resolves when action is successfully completed.
+
+Example:
+```js
+import { Redirect } from "@saleor/app-bridge/actions";
+
+const handleRedirect = async () => {
+  await app.dispatch(Redirect({ to: "/orders" }));
+  console.log("Redirect complete!");
+}
+
+handleRedirect();
+```
+
+### Available actions
+| Action     | Arguments                                                        | Description |
+| :--------- | :--------------------------------------------------------------- | :---------- |
+| `Redirect` | `to` (string) - relative (inside Dashboard) or absolute URL path |             |
+|            | `newContext` (boolean) - should open in a new browsing context   |             |
+

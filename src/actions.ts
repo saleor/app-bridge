@@ -1,16 +1,55 @@
-type HandshakeAction = {
-  payload: {
-    token: string;
-  };
-  type: "handshake";
+import { v4 as uuidv4 } from "uuid";
+
+import { Values } from "./helpers";
+
+// Using constants over Enums, more info: https://fettblog.eu/tidy-typescript-avoid-enums/
+export const ActionType = {
+  redirect: "redirect",
+} as const;
+export type ActionType = Values<typeof ActionType>;
+
+type Action<Name extends ActionType, Payload extends {}> = {
+  payload: Payload;
+  type: Name;
 };
 
-// type ThemeAction = {
-//   payload: {
-//     theme: "light" | "dark";
-//   }
-//   type: "theme"
-// }
+type ActionWithId<Name extends ActionType, Payload extends {}> = {
+  payload: Payload & { actionId: string };
+  type: Name;
+};
 
-export type Action = HandshakeAction;
-export type ActionType = Action["type"];
+function withActionId<
+  Name extends ActionType,
+  Payload extends {},
+  T extends Action<Name, Payload>
+>(action: T): ActionWithId<Name, Payload> {
+  const actionId = uuidv4();
+
+  return {
+    ...action,
+    payload: {
+      ...action.payload,
+      actionId,
+    },
+  };
+}
+
+export type RedirectPayload = {
+  /**
+   * Relative (inside Dashboard) or absolute URL path.
+   */
+  to: string;
+  newContext?: boolean;
+};
+/**
+ * Redirects Dashboard user.
+ */
+export type RedirectAction = ActionWithId<"redirect", RedirectPayload>;
+export function Redirect(payload: RedirectPayload): RedirectAction {
+  return withActionId({
+    payload,
+    type: "redirect",
+  });
+}
+
+export type Actions = RedirectAction;
