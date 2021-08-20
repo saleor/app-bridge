@@ -1,8 +1,5 @@
 import { fireEvent } from "@testing-library/dom";
 
-import { Redirect } from "../src/actions";
-import { DispatchResponseEvent } from "../src/events";
-
 // mock document.referrer
 const origin = "http://example.com";
 Object.defineProperty(window.document, "referrer", {
@@ -10,7 +7,7 @@ Object.defineProperty(window.document, "referrer", {
   writable: true,
 });
 // eslint-disable-next-line
-import { createApp } from "../src";
+import { actions, DispatchResponseEvent, createApp } from "../src";
 
 describe("createApp", () => {
   const domain = "test-domain";
@@ -100,7 +97,7 @@ describe("createApp", () => {
 
   it("dispatches valid action", () => {
     const target = "/test";
-    const action = Redirect({ to: target });
+    const action = actions.Redirect({ to: target });
 
     window.addEventListener("message", event => {
       if (event.data.type === action.type) {
@@ -121,7 +118,7 @@ describe("createApp", () => {
   });
 
   it("times out after action response has not been registered", () => {
-    return expect(app.dispatch(Redirect({ to: "/test" }))).rejects.toBe(
+    return expect(app.dispatch(actions.Redirect({ to: "/test" }))).rejects.toBe(
       "Error: Action response timed out."
     );
   });

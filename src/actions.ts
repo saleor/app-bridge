@@ -45,7 +45,7 @@ export type RedirectPayload = {
  * Redirects Dashboard user.
  */
 export type RedirectAction = ActionWithId<"redirect", RedirectPayload>;
-export function Redirect(payload: RedirectPayload): RedirectAction {
+function Redirect(payload: RedirectPayload): RedirectAction {
   return withActionId({
     payload,
     type: "redirect",
@@ -53,3 +53,7 @@ export function Redirect(payload: RedirectPayload): RedirectAction {
 }
 
 export type Actions = RedirectAction;
+
+export const actions = {
+  Redirect,
+};

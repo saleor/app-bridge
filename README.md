@@ -54,17 +54,17 @@ app.unsubscribeAll(); // unsubscribe from all events
 
 
 ## Actions
-Actions expose a high-level API to communicate with Saleor Dashboard.
+Actions expose a high-level API to communicate with Saleor Dashboard. They're exported under an `actions` namespace.
 
 ### Available methods
 **`dispatch(action)`** - dispatches an Action. Returns a promise which resolves when action is successfully completed.
 
 Example:
 ```js
-import { Redirect } from "@saleor/app-bridge/actions";
+import { actions } from "@saleor/app-bridge";
 
 const handleRedirect = async () => {
-  await app.dispatch(Redirect({ to: "/orders" }));
+  await app.dispatch(actions.Redirect({ to: "/orders" }));
   console.log("Redirect complete!");
 }
 
