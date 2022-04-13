@@ -17,7 +17,7 @@ const app = createApp();
 
 Access app state:
 ```js
-const { token, domain, ready } = app.getState();
+const { token, domain, ready, id } = app.getState();
 ```
 
 ## Events
