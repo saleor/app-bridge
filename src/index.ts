@@ -3,8 +3,7 @@ import { app } from "./app";
 import { EventType } from "./events";
 
 export function createApp(targetDomain?: string) {
-  let domain: string;
-  let id: string;
+  let domain: string, id: string;
 
   if (targetDomain) {
     domain = targetDomain;
