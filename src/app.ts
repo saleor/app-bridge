@@ -1,7 +1,7 @@
 import { SSR } from "./constants";
 import { Events, EventType, PayloadOfEvent } from "./events";
 
-type State = {
+export type AppBridgeState = {
   token?: string;
   id: string;
   ready: boolean;
@@ -12,7 +12,7 @@ type SubscribeMap = {
   [type in EventType]: Record<any, EventCallback<PayloadOfEvent<type>>>;
 };
 
-function reducer(state: State, event: Events) {
+function reducer(state: AppBridgeState, event: Events) {
   switch (event.type) {
     case EventType.handshake: {
       const newState = {
@@ -37,7 +37,7 @@ export const app = (() => {
     return null as never;
   }
 
-  let state: State = {
+  let state: AppBridgeState = {
     id: "",
     domain: "",
     ready: false,
@@ -122,7 +122,7 @@ export const app = (() => {
     return state;
   }
 
-  function setState(newState: Partial<State>) {
+  function setState(newState: Partial<AppBridgeState>) {
     state = {
       ...state,
       ...newState,

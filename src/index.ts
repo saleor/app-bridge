@@ -74,4 +74,5 @@ export function createApp(targetDomain?: string) {
 
 export * from "./events";
 export * from "./actions";
+export * from "./types";
 export default createApp;
