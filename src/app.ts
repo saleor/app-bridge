@@ -3,7 +3,7 @@ import { Events, EventType, PayloadOfEvent } from "./events";
 
 type State = {
   token?: string;
-  id?: string;
+  id: string;
   ready: boolean;
   domain: string;
 };
@@ -38,6 +38,7 @@ export const app = (() => {
   }
 
   let state: State = {
+    id: "",
     domain: "",
     ready: false,
   };
