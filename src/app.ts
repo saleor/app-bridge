@@ -3,6 +3,7 @@ import { Events, EventType, PayloadOfEvent } from "./events";
 
 type State = {
   token?: string;
+  id?: string;
   ready: boolean;
   domain: string;
 };
