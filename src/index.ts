@@ -12,7 +12,9 @@ export function createApp(targetDomain?: string) {
     domain = url.searchParams.get("domain") || "";
   }
 
-  app.setState({ domain });
+  const id = new URL(domain).searchParams.get("id") ?? "";
+
+  app.setState({ domain, id });
 
   /**
    * Dispatches Action to Saleor Dashboard.
@@ -72,4 +74,5 @@ export function createApp(targetDomain?: string) {
 
 export * from "./events";
 export * from "./actions";
+export * from "./types";
 export default createApp;

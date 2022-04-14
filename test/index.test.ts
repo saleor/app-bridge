@@ -10,7 +10,7 @@ Object.defineProperty(window.document, "referrer", {
 import { actions, DispatchResponseEvent, createApp } from "../src";
 
 describe("createApp", () => {
-  const domain = "test-domain";
+  const domain = "http://test-domain.com/?id=appid";
   const app = createApp(domain);
 
   it("correctly sets the domain", () => {
@@ -75,6 +75,7 @@ describe("createApp", () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(payload);
     expect(app.getState().token).toEqual(token);
+    expect(app.getState().id).toEqual("appid");
 
     // unsubscribe
     unsubscribe();
