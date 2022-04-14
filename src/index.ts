@@ -3,7 +3,7 @@ import { app } from "./app";
 import { EventType } from "./events";
 
 export function createApp(targetDomain?: string) {
-  let domain: string, id: string;
+  let domain: string;
 
   if (targetDomain) {
     domain = targetDomain;
@@ -12,7 +12,7 @@ export function createApp(targetDomain?: string) {
     domain = url.searchParams.get("domain") || "";
   }
 
-  id = new URL(domain).searchParams.get("id") ?? "";
+  const id = new URL(domain).searchParams.get("id") ?? "";
 
   app.setState({ domain, id });
 
