@@ -9,7 +9,7 @@ Object.defineProperty(window.document, "referrer", {
 
 Object.defineProperty(window, "location", {
   value: {
-    href: origin + "?id=appid",
+    href: origin + "?domain=saleor.domain&id=appid",
   },
   writable: true,
 });
@@ -18,7 +18,7 @@ Object.defineProperty(window, "location", {
 import { actions, DispatchResponseEvent, createApp } from "../src";
 
 describe("createApp", () => {
-  const domain = "http://test-domain.com/";
+  const domain = "saleor.domain.host";
   const app = createApp(domain);
 
   it("correctly sets the domain", () => {
