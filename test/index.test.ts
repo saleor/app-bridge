@@ -6,11 +6,19 @@ Object.defineProperty(window.document, "referrer", {
   value: origin,
   writable: true,
 });
+
+Object.defineProperty(window, "location", {
+  value: {
+    href: origin + "?domain=saleor.domain&id=appid",
+  },
+  writable: true,
+});
+
 // eslint-disable-next-line
 import { actions, DispatchResponseEvent, createApp } from "../src";
 
 describe("createApp", () => {
-  const domain = "http://test-domain.com/?id=appid";
+  const domain = "saleor.domain.host";
   const app = createApp(domain);
 
   it("correctly sets the domain", () => {

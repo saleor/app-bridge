@@ -4,15 +4,14 @@ import { EventType } from "./events";
 
 export function createApp(targetDomain?: string) {
   let domain: string;
+  const url = new URL(window.location.href);
+  const id = url.searchParams.get("id") || "";
 
   if (targetDomain) {
     domain = targetDomain;
   } else {
-    const url = new URL(window.location.href);
     domain = url.searchParams.get("domain") || "";
   }
-
-  const id = new URL(domain).searchParams.get("id") ?? "";
 
   app.setState({ domain, id });
 
