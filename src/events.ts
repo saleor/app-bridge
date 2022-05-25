@@ -40,5 +40,4 @@ export type DispatchResponseEvent = Event<
 export type Events = HandshakeEvent | DispatchResponseEvent;
 export type PayloadOfEvent<
   TEventType extends EventType,
-  TEvent extends Events = Events
-> = TEvent extends { type: TEventType } ? TEvent["payload"] : never;
+  TEvent extends Events = Events> = TEvent extends Event<TEventType, any> ? TEvent["payload"] : never;
