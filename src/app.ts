@@ -1,11 +1,13 @@
 import { SSR } from "./constants";
-import { Events, EventType, PayloadOfEvent } from "./events";
+import { Events, EventType, PayloadOfEvent, ThemeType } from "./events";
 
 export type AppBridgeState = {
   token?: string;
   id: string;
   ready: boolean;
   domain: string;
+  path: string;
+  theme: ThemeType;
 };
 type EventCallback<TPayload extends {} = {}> = (data: TPayload) => void;
 type SubscribeMap = {
@@ -19,6 +21,22 @@ function reducer(state: AppBridgeState, event: Events) {
         ...state,
         ready: true,
         token: event.payload.token,
+      };
+
+      return newState;
+    }
+    case EventType.redirect: {
+      const newState = {
+        ...state,
+        path: event.payload.path,
+      };
+
+      return newState;
+    }
+    case EventType.theme: {
+      const newState = {
+        ...state,
+        theme: event.payload.theme,
       };
 
       return newState;
@@ -41,10 +59,14 @@ export const app = (() => {
     id: "",
     domain: "",
     ready: false,
+    path: "/",
+    theme: "light",
   };
   let subscribeMap: SubscribeMap = {
     handshake: {},
     response: {},
+    redirect: {},
+    theme: {},
   };
   let refererOrigin: string;
 
@@ -69,7 +91,7 @@ export const app = (() => {
       // run callbacks
       const { type, payload } = data;
       if (EventType.hasOwnProperty(type)) {
-        Object.getOwnPropertySymbols(subscribeMap[type]).forEach(key =>
+        Object.getOwnPropertySymbols(subscribeMap[type]).forEach((key) =>
           // @ts-ignore
           subscribeMap[type][key](payload)
         );
@@ -88,7 +110,7 @@ export const app = (() => {
     TEventType extends EventType,
     TPayload extends PayloadOfEvent<TEventType>
   >(eventType: TEventType, cb: EventCallback<TPayload>) {
-    const key = (Symbol() as unknown) as string; // https://github.com/Microsoft/TypeScript/issues/24587
+    const key = Symbol() as unknown as string; // https://github.com/Microsoft/TypeScript/issues/24587
     // @ts-ignore
     subscribeMap[eventType][key] = cb;
 
@@ -109,6 +131,8 @@ export const app = (() => {
       subscribeMap = {
         handshake: {},
         response: {},
+        redirect: {},
+        theme: {},
       };
     }
   }
