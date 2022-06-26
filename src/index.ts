@@ -6,7 +6,7 @@ export function createApp(targetDomain?: string) {
   let domain: string;
   const url = new URL(window.location.href);
   const id = url.searchParams.get("id") || "";
-  const path = url.searchParams.get("path") || "";
+  const path = window.location.pathname || "";
   const theme: ThemeType =
     url.searchParams.get("theme") === "light" ? "light" : "dark";
 
