@@ -91,7 +91,7 @@ export const app = (() => {
       // run callbacks
       const { type, payload } = data;
       if (EventType.hasOwnProperty(type)) {
-        Object.getOwnPropertySymbols(subscribeMap[type]).forEach((key) =>
+        Object.getOwnPropertySymbols(subscribeMap[type]).forEach(key =>
           // @ts-ignore
           subscribeMap[type][key](payload)
         );
@@ -110,7 +110,7 @@ export const app = (() => {
     TEventType extends EventType,
     TPayload extends PayloadOfEvent<TEventType>
   >(eventType: TEventType, cb: EventCallback<TPayload>) {
-    const key = Symbol() as unknown as string; // https://github.com/Microsoft/TypeScript/issues/24587
+    const key = (Symbol() as unknown) as string; // https://github.com/Microsoft/TypeScript/issues/24587
     // @ts-ignore
     subscribeMap[eventType][key] = cb;
 

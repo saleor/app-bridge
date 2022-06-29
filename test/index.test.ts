@@ -108,7 +108,7 @@ describe("createApp", () => {
     const target = "/test";
     const action = actions.Redirect({ to: target });
 
-    window.addEventListener("message", (event) => {
+    window.addEventListener("message", event => {
       if (event.data.type === action.type) {
         fireEvent(
           window,
