@@ -30,6 +30,7 @@
     "test": "tsdx test",
     "lint": "tsdx lint",
     "size": "size-limit",
+    "prepare": "tsdx build",
     "analyze": "size-limit --why",
     "release": "np"
   },
