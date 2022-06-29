@@ -1,11 +1,14 @@
 import { Actions } from "./actions";
 import { app } from "./app";
-import { EventType } from "./events";
+import { EventType, ThemeType } from "./events";
 
 export function createApp(targetDomain?: string) {
   let domain: string;
   const url = new URL(window.location.href);
   const id = url.searchParams.get("id") || "";
+  const path = window.location.pathname || "";
+  const theme: ThemeType =
+    url.searchParams.get("theme") === "light" ? "light" : "dark";
 
   if (targetDomain) {
     domain = targetDomain;
@@ -13,7 +16,7 @@ export function createApp(targetDomain?: string) {
     domain = url.searchParams.get("domain") || "";
   }
 
-  app.setState({ domain, id });
+  app.setState({ domain, id, path, theme });
 
   /**
    * Dispatches Action to Saleor Dashboard.
