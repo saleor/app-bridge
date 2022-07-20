@@ -132,3 +132,20 @@ describe("createApp", () => {
     );
   });
 });
+
+describe("createApp with target domain", () => {
+  it("should create app with target domain", () => {
+    const app = createApp(origin);
+    const state = app?.getState();
+
+    expect(state.domain).toBe(origin);
+  });
+
+  it("should create app without target domain passed", () => {
+    // Defined with "Object.defineProperty"
+    const app = createApp();
+    const state = app?.getState();
+
+    expect(state.domain).toBe("saleor.domain");
+  });
+});
